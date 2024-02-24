@@ -44,6 +44,7 @@ export const authOptions: AuthOptions = {
       credentials: {
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
+        
       },
       async authorize(credentials, req) {
         const res = await sendRequest<IBackendRes<JWT>>({
@@ -71,6 +72,13 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
+     /**
+     * step 1: provider return user's data (user parameter)
+     * step 2: update user'data to token, then call API login with Backend to create new user if it's not available
+     * 
+     * mỗi khi user F5 page, client sẽ gửi user info đến BE để lấy access_token, refresh token...
+     * sau đó sẽ update token đó cho session callback
+     */
     async jwt({ token, user, account, profile, trigger }) {
       if (trigger === "signIn" && account?.provider !== "credentials") {
         const res = await sendRequest<IBackendRes<JWT>>({
